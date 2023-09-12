@@ -14,28 +14,32 @@ const News = (props) => {
     const capitalizeFirstLetter = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
-
-
+    const [url,SetUrl]=useState('')
 
 
     const updateNews = async () => {
-        props.setProgress(10);
-        const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&api=${props.apiKey}&page=${page}&pageSize=${props.pageSize}`;
+        
+        SetUrl(`https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page}&pageSize=${props.pageSize}`);
         setLoading(true)
         let data = await fetch(url);
         props.setProgress(30);
         let parsedData = await data.json();
-        props.setProgress(70);
         setArticles(parsedData.articles)
         setTotalResults(parsedData.totalResults)
         setLoading(false)
         props.setProgress(100);
     }
-    useEffect(() => {
+    // useEffect(() => {
+    //     document.title = `${capitalizeFirstLetter(props.category)} - MyNews`;
+    //     updateNews();
+    //     // eslint-disable-next-line
+    // }, [])
+
+    useEffect(()=>{
         document.title = `${capitalizeFirstLetter(props.category)} - MyNews`;
         updateNews();
-        // eslint-disable-next-line
-    }, [])
+    },[url, props.category])
+    
 
 
     /* handlePrevClick = async () => {
@@ -75,7 +79,7 @@ const News = (props) => {
 
     const fetchMoreData = async () => {
 
-        const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&api=${props.apiKey}&page=${page + 1}&pageSize=${props.pageSize}`;
+        SetUrl(`https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page + 1}&pageSize=${props.pageSize}`);
         setPage(page + 1)
         let data = await fetch(url);
         let parsedData = await data.json()
@@ -104,10 +108,10 @@ const News = (props) => {
 
 
                     <div className="row">
-                        {articles.map((element) => {
+                        {articles.map ((element) => {
                             return <div className="col-md-4" key={element.url}>
-                                <NewsItem title={element.title ? element.title.slice(0, 40) : ""} description={element.description ? element.description.slice(0, 88) : ""} imgurl={element.urlToImage} newsurl={element.url} author={element.author} date={element.publishedAt} source={element.source.name}></NewsItem>
-                            </div>
+                                    <NewsItem title={element.title ? element.title: ""} description={element.description ? element.description : ""} imgurl={element.urlToImage} newsurl={element.url} author={element.author} date={element.publishedAt} source={element.source.name}></NewsItem>
+                                </div>
                         })}
                     </div>
                 </div>
@@ -126,14 +130,13 @@ const News = (props) => {
     News.defaultProps = {
         country: 'in',
         pageSize: 8,
-        category: 'general',
+        category: 'general'
     }
 
     News.propTypes = {
         country: PropTypes.string,
         pageSize: PropTypes.number,
-        category: PropTypes.string,
+        category: PropTypes.string
     }
 
 export default News;
-// {state.loading && <spinner/>}
